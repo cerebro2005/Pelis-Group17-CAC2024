@@ -1,6 +1,6 @@
-const API_SERVER_GET_POST = 'http://files.000webhost.com/public_html/api_get_post.php';
-const API_SERVER_DELETE = 'http://files.000webhost.com/public_html/api_delete.php';
-const API_SERVER_PUT = 'http://files.000webhost.com/public_html/api_put.php';
+const API_SERVER_GET_POST = 'http://public_html/api_get_post.php';
+const API_SERVER_DELETE = 'http://public_html/api_delete.php';
+const API_SERVER_PUT = 'http://public_html/api_put.php';
 
 document.addEventListener('DOMContentLoaded', function () {
     // Función para cargar las películas al cargar la página
