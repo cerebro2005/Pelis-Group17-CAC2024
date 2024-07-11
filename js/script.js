@@ -1,6 +1,6 @@
-const API_SERVER_GET_POST = 'http://localhost/CaC2024/BACK/api_get_post.php';
-const API_SERVER_DELETE = 'http://localhost/CaC2024/BACK/api_delete.php';
-const API_SERVER_PUT = 'http://localhost/CaC2024/BACK/api_put.php';
+const API_SERVER_GET_POST = 'http://localhost/api_get_post.php';
+const API_SERVER_DELETE = 'http://localhost/api_delete.php';
+const API_SERVER_PUT = 'http://localhost/api_put.php';
 
 document.addEventListener('DOMContentLoaded', function () {
     // Función para cargar las películas al cargar la página
