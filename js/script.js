@@ -1,72 +1,99 @@
-// URL del servidor API
-const SERVIDOR_API = 'http://localhost/CaC2024/BACK/api.php';
+const API_SERVER_GET_POST = 'http://localhost/CaC2024/BACK/api_get_post.php';
+const API_SERVER_DELETE = 'http://localhost/CaC2024/BACK/api_delete.php';
+const API_SERVER_PUT = 'http://localhost/CaC2024/BACK/api_put.php';
 
-// Cuando el documento HTML ha terminado de cargarse
-document.addEventListener('DOMContentLoaded', () => {
-    const bodyTablePeliculas = document.getElementById('bodyTablePeliculas'); // Obtiene el cuerpo de la tabla donde se mostrarán las películas
-    const form = document.getElementById('pelicula-form'); // Obtiene el formulario para añadir nuevas películas
+document.addEventListener('DOMContentLoaded', function () {
+    // Función para cargar las películas al cargar la página
+    cargarPeliculas();
 
-    // Función para obtener las películas del servidor
-    const fetchPeliculas = async () => {
-        try {
-            const response = await fetch(SERVIDOR_API); // Hace una solicitud GET a la API
-            if (!response.ok) throw new Error('La respuesta de la red no fue satisfactoria'); // Si la respuesta no es satisfactoria, lanza un error
-            const peliculas = await response.json(); // Convierte la respuesta en un objeto JSON
+    // Event listener para el formulario de agregar película
+    document.getElementById('pelicula-form').addEventListener('submit', function (event) {
+        event.preventDefault(); // Evita que se envíe el formulario automáticamente
 
-            bodyTablePeliculas.innerHTML = ''; // Limpia el contenido del cuerpo de la tabla
+        // Obtener los datos del formulario
+        let formData = new FormData(this);
 
-            // Recorre el array de películas y las añade a la tabla
-            peliculas.forEach(pelicula => {
-                const tr = document.createElement('tr'); // Crea una nueva fila en la tabla
-                tr.innerHTML = `
-                    <td>${pelicula.titulo}</td>
-                    <td>${pelicula.lanzamiento}</td>
-                    <td>${pelicula.genero}</td>
-                    <td>${pelicula.duracion}</td>
-                    <td>${pelicula.director}</td>
-                    <td>${pelicula.actores}</td>
-                    <td><img width="150px" src="${pelicula.imagen}" alt="${pelicula.titulo}"></td>
-                `; // Se rellena la fila con los datos de la película
-                // la sinopsis de la pelicula no se muestra en el listado ya que esta puede ser muy larga
-                //<td>${pelicula.sinopsis}</td>
-                bodyTablePeliculas.appendChild(tr); // Añade la fila al cuerpo de la tabla
-            });
-        } catch (error) {
-            console.log('Error al obtener las películas:', error); // Muestra un mensaje de error en la consola si ocurre algún problema
-        }
-    };
-
-    // Evento que se dispara al enviar el formulario
-    form.addEventListener('submit', async (event) => {
-        event.preventDefault(); // Previene que el formulario se envíe de manera predeterminada (es decir, que recargue la página)
-        const titulo = document.getElementById('titulo').value; // Obtiene el valor del campo título
-        const lanzamiento = document.getElementById('lanzamiento').value; // Obtiene el valor del campo lanzamiento
-        const genero = document.getElementById('genero').value; // Obtiene el valor del campo género
-        const duracion = document.getElementById('duracion').value; // Obtiene el valor del campo duración
-        const director = document.getElementById('director').value; // Obtiene el valor del campo director
-        const actores = document.getElementById('actores').value; // Obtiene el valor del campo actores
-        const sinopsis = document.getElementById('sinopsis').value; // Obtiene el valor del campo sinopsis
-        const imagen = document.getElementById('imagen').value; // Obtiene el valor del campo imagen
-
-        // Realiza una solicitud POST a la API para añadir una nueva película
-        try {
-            const response = await fetch(SERVIDOR_API, {
-                method: 'POST', // Indica que la solicitud es de tipo POST
-                headers: {
-                    'Content-Type': 'application/json' // Establece el tipo de contenido como JSON
-                },
-                body: JSON.stringify({ titulo, lanzamiento, genero, duracion, director, actores, sinopsis, imagen }) // Convierte los datos del formulario a JSON
-            });
-
-            if (!response.ok) throw new Error('La respuesta de la red no fue satisfactoria'); // Si la respuesta no es satisfactoria, lanza un error
-            const result = await response.json(); // Convierte la respuesta en un objeto JSON
-            alert(result.message); // Muestra un mensaje de alerta con el resultado
-            fetchPeliculas(); // Vuelve a obtener y mostrar las películas
-            form.reset(); // Reinicia el formulario para que quede vacío
-        } catch (error) {
-            console.log('Error al enviar el formulario:', error); // Muestra un mensaje de error en la consola si ocurre algún problema
-        }
+        // Realizar la solicitud POST para agregar la película
+        fetch(API_SERVER_GET_POST, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Película agregada:', data);
+            // Limpiar el formulario después de agregar la película
+            this.reset();
+            // Volver a cargar la lista de películas actualizada
+            cargarPeliculas();
+        })
+        .catch(error => {
+            console.error('Error al agregar película:', error);
+        });
     });
 
-    fetchPeliculas(); // Obtiene y muestra las películas cuando la página se carga
+    // Función para cargar las películas desde el servidor
+    function cargarPeliculas() {
+        fetch(API_SERVER_GET_POST)
+        .then(response => response.json())
+        .then(data => {
+            // console.log('Películas cargadas:', data);
+            // Limpiar la tabla antes de agregar las nuevas filas
+            document.getElementById('bodyTablePeliculas').innerHTML = '';
+
+            // Recorrer los datos y crear las filas de la tabla
+            data.forEach(function(pelicula) {
+                let imagenSrc = pelicula.imagen ? `../assets/img/agregadas/${pelicula.imagen}` : '';
+                let row = `
+                    <tr>
+                        <td style="text-align: center;">${pelicula.id}</td>
+                        <td style="text-align: center;">${pelicula.titulo}</td>
+                        <td style="text-align: center;">${pelicula.lanzamiento}</td>
+                        <td style="text-align: center;">${pelicula.genero}</td>
+                        <td style="text-align: center;">${pelicula.duracion}</td>
+                        <td style="text-align: center;">${pelicula.imagen ? `<img src="${imagenSrc}" class="img-thumbnail" style="max-width: 100px;" />` : 'Sin imagen'}</td>
+                        <td style="text-align: center;">
+                            <button class="btn btn-warning btn-sm" onclick="editarPelicula(${pelicula.id})">Editar</button>
+                            <button class="btn btn-danger btn-sm" onclick="eliminarPelicula(${pelicula.id})">Eliminar</button>
+                        </td>
+                    </tr>
+                `;
+                document.getElementById('bodyTablePeliculas').innerHTML += row;
+            });
+        })
+        .catch(error => {
+            console.error('Error al cargar películas:', error);
+        });
+    }
+
+    // Función para editar una película (a implementar según tu necesidad)
+    function editarPelicula(id) {
+        // Aquí puedes implementar la lógica para editar una película
+        alert('Esta funcionalidad se encuentra en construccion');
+        //console.log('Editar película con ID:', id);
+    }
+
+    // Función para eliminar una película
+    function eliminarPelicula(id) {
+        fetch(API_SERVER_DELETE, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({ id: id })
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            console.log('Película eliminada:', data);
+            cargarPeliculas();
+        })
+        .catch(function(error) {
+            console.error('Error al eliminar película:', error);
+        });
+    }
+
+    // Hacer las funciones accesibles globalmente
+    window.editarPelicula = editarPelicula;
+    window.eliminarPelicula = eliminarPelicula;
 });
