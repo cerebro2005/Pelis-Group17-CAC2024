@@ -1,6 +1,6 @@
-const API_SERVER_GET_POST = 'https://cerebro2005fsa.000webhostapp.com/api_get_post.php';
-const API_SERVER_DELETE = 'https://cerebro2005fsa.000webhostapp.com/api_delete.php';
-const API_SERVER_PUT = 'https://cerebro2005fsa.000webhostapp.com/api_put.php';
+const API_SERVER_GET_POST = 'http://localhost/CaC2024/BACK/api_get_post.php';
+const API_SERVER_DELETE = 'http://localhost/CaC2024/BACK/api_delete.php';
+const API_SERVER_PUT = 'http://localhost/CaC2024/BACK/api_put.php';
 
 document.addEventListener('DOMContentLoaded', function () {
     // Función para cargar las películas al cargar la página
